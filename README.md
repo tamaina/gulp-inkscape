@@ -1,6 +1,6 @@
 # gulp-inkscape
 ## Installing
-1. inkscapeをダウンロードし、パスを通します。
+1. inkscapeをインストールします（ストア版は不可）
 2. `npm i gulp-inkscape` でパッケージをインストールします。
 
 ## Usage
@@ -11,7 +11,8 @@ gulp.src("path/**/*.svg")
 ```
 
 ### option
-[inkscapeのコマンドラインのドキュメント](https://inkscape.org/ja/doc/inkscape-man.html)も併せてお読みください。
+[inkscapeのコマンドラインのドキュメント](https://inkscape.org/ja/doc/inkscape-man.html)も併せてお読みください。  
+両方指定しない場合でも必ず`{}`を含めてください。
 
 #### args
 コマンドラインオプションを配列で記述します。Usageでは`-T`を指定することで、テキストをパスに変換しています。

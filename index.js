@@ -1,4 +1,4 @@
-const { spawn } = require("child_process")
+const { spawn, execSync } = require("child_process")
 const temp = require("temp")
 const through2 = require("through2")
 const fs = require("fs")
@@ -11,6 +11,20 @@ module.exports = (option) => {
     else if (Array.isArray(option.args)) nargs = nargs.concat(option.args)
     else throw Error("maqz:inkscape: 'args' should be a string or an array.")
   }
+
+  let command = ""
+  try {
+    execSync("inkscape --version")
+    command = "inkscape"
+  } catch (e) {
+    try {
+      execSync(String.raw`"C:\Program Files\Inkscape\inkscape.exe" --version`)
+      command = String.raw`"C:\Program Files\Inkscape\inkscape.exe"`
+    } catch (f) {
+      throw Error("Inkscape doesn't exist")
+    }
+  }
+
   return through2.obj(
     // eslint-disable-next-line consistent-return
     (nfile, encode, cb) => {
@@ -24,7 +38,7 @@ module.exports = (option) => {
           fs.write(info.fd, file.contents, () => null)
           fs.close(info.fd, (err2) => {
             if (err2) cb(new Error("maqz:inkscape(temp-write)", err2))
-            const dois = spawn("inkscape", nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
+            const dois = spawn(command, nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
             const res = []
             dois.stdout.on("data", (chunk) => {
               res.push(chunk)
@@ -46,7 +60,7 @@ module.exports = (option) => {
           fs.write(info.fd, file.contents, () => null)
           fs.close(info.fd, (err2) => {
             if (err2) cb(new Error("maqz:inkscape(temp-write)", err2))
-            const dois = spawn("inkscape", nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
+            const dois = spawn(command, nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
             dois.stderr.on("data", (data) => {
               throw Error(`maqz:inkscape:\n${data.toString()}`)
             })
