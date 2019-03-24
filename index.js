@@ -18,12 +18,13 @@ module.exports = (option) => {
     command = "inkscape"
   } catch (e) {
     try {
-      execSync(String.raw`"C:\Program Files\Inkscape\inkscape.exe" --version`)
-      command = String.raw`"C:\Program Files\Inkscape\inkscape.exe"`
+      execSync(String.raw`"C:\Program Files\Inkscape\inkscape" --version`)
+      command = String.raw`"C:\Program Files\Inkscape\inkscape"`
     } catch (f) {
       throw Error("Inkscape doesn't exist")
     }
   }
+  console.log(command)
 
   return through2.obj(
     // eslint-disable-next-line consistent-return
