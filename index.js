@@ -12,19 +12,18 @@ module.exports = (option) => {
     else throw Error("maqz:inkscape: 'args' should be a string or an array.")
   }
 
-  let command = ""
+  let cwd
   try {
     execSync("inkscape --version")
-    command = "inkscape"
   } catch (e) {
     try {
-      execSync(String.raw`"C:\Program Files\Inkscape\inkscape" --version`)
-      command = String.raw`"C:\Program Files\Inkscape\inkscape"`
+      execSync(String.raw`"c:\Program Files\Inkscape\inkscape" --version`)
+      cwd = String.raw`c:\Program Files\Inkscape`
     } catch (f) {
       throw Error("Inkscape doesn't exist")
     }
   }
-  console.log(command)
+  console.log(cwd)
 
   return through2.obj(
     // eslint-disable-next-line consistent-return
@@ -39,7 +38,11 @@ module.exports = (option) => {
           fs.write(info.fd, file.contents, () => null)
           fs.close(info.fd, (err2) => {
             if (err2) cb(new Error("maqz:inkscape(temp-write)", err2))
-            const dois = spawn(command, nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
+            const dois = spawn(
+              "inkscape",
+              nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]),
+              { cwd }
+              )
             const res = []
             dois.stdout.on("data", (chunk) => {
               res.push(chunk)
@@ -61,7 +64,11 @@ module.exports = (option) => {
           fs.write(info.fd, file.contents, () => null)
           fs.close(info.fd, (err2) => {
             if (err2) cb(new Error("maqz:inkscape(temp-write)", err2))
-            const dois = spawn(command, nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]))
+            const dois = spawn(
+              "inkscape",
+              nargs.concat(["-z", "-f", info.path, `--export-${option.exportType || "plain-svg"}=-`]),
+              { cwd }
+              )
             dois.stderr.on("data", (data) => {
               throw Error(`maqz:inkscape:\n${data.toString()}`)
             })
